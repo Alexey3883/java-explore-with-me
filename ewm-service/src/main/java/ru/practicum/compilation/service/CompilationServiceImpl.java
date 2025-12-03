@@ -36,19 +36,19 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public CompilationDto addCompilationAdmin(NewCompilationDto newCompilationDto) {
         if (newCompilationDto == null) {
-            throw new IllegalArgumentException("Compilation data cannot be null");
+            throw new java.lang.IllegalArgumentException("Compilation data cannot be null");
         }
 
         if (newCompilationDto.getTitle() == null) {
-            throw new IllegalArgumentException("Compilation title cannot be null");
+            throw new java.lang.IllegalArgumentException("Compilation title cannot be null");
         }
 
         if (newCompilationDto.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("Compilation title cannot be empty or consist of spaces only");
+            throw new java.lang.IllegalArgumentException("Compilation title cannot be empty or consist of spaces only");
         }
 
         if (newCompilationDto.getTitle().length() > 50) {
-            throw new IllegalArgumentException("Compilation title must be no more than 50 characters");
+            throw new java.lang.IllegalArgumentException("Compilation title must be no more than 50 characters");
         }
 
         Compilation compilation = new Compilation();
@@ -100,20 +100,28 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = getCompilationOrThrow(compilationId);
 
-        if (updateCompilationRequest.getEvents() != null && !updateCompilationRequest.getEvents().isEmpty()) {
-            List<Event> events = eventRepository.findAllByIdIn(updateCompilationRequest.getEvents());
-            compilation.setEvents(events);
+        if (updateCompilationRequest.getEvents() != null) {
+            if (updateCompilationRequest.getEvents().isEmpty()) {
+                compilation.setEvents(new ArrayList<>());
+            } else {
+                List<Event> events = eventRepository.findAllByIdIn(updateCompilationRequest.getEvents());
+                compilation.setEvents(events);
+            }
         }
         if (updateCompilationRequest.getTitle() != null) {
             compilation.setTitle(updateCompilationRequest.getTitle());
-
         }
         if (updateCompilationRequest.getPinned() != null) {
             compilation.setPinned(updateCompilationRequest.getPinned());
         }
+
         compilation = compilationRepository.save(compilation);
         Long view = getHitsEvent(compilationId, LocalDateTime.now().minusDays(1000),
                 LocalDateTime.now(), true, client);
+
+        if (view == null) {
+            view = 0L;
+        }
         return compilationMapper.toDto(compilation, view);
     }
 

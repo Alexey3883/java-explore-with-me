@@ -31,19 +31,20 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Получение запроса на добавление новой категории");
 
         if (newCategoryDto == null) {
-            throw new IllegalArgumentException("Category data cannot be null");
+            throw new java.lang.IllegalArgumentException("Category data cannot be null");
         }
 
         if (newCategoryDto.getName() == null) {
-            throw new IllegalArgumentException("Category name cannot be null");
+            throw new java.lang.IllegalArgumentException("Category name cannot be null");
         }
 
         if (newCategoryDto.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be empty or consist of spaces only");
+            throw new java.lang.IllegalArgumentException("Category name cannot be empty or consist of spaces only");
         }
 
+        // Проверка длины строки
         if (newCategoryDto.getName().length() > 50) {
-            throw new IllegalArgumentException("Category name must be no more than 50 characters");
+            throw new java.lang.IllegalArgumentException("Category name must be no more than 50 characters");
         }
 
         if (categoryRepository.existsByName(newCategoryDto.getName())) {
@@ -78,7 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(catId).orElseThrow(
                 () -> new NotFoundException("Category not found"));
         if (eventRepository.findByCategoryId(catId) != null) {
-            throw new IllegalArgumentException("Нельзя удалить категорию, которая уже используется в событиях");
+            throw new ru.practicum.exception.IllegalArgumentException("Нельзя удалить категорию, которая уже используется в событиях");
         }
         categoryRepository.deleteById(catId);
         log.info("Category was deleted");
@@ -89,19 +90,19 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
 
         if (categoryDto == null) {
-            throw new IllegalArgumentException("Category data cannot be null");
+            throw new java.lang.IllegalArgumentException("Category data cannot be null");
         }
 
         if (categoryDto.getName() == null) {
-            throw new IllegalArgumentException("Category name cannot be null");
+            throw new java.lang.IllegalArgumentException("Category name cannot be null");
         }
 
         if (categoryDto.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be empty or consist of spaces only");
+            throw new java.lang.IllegalArgumentException("Category name cannot be empty or consist of spaces only");
         }
 
         if (categoryDto.getName().length() > 50) {
-            throw new IllegalArgumentException("Category name must be no more than 50 characters");
+            throw new java.lang.IllegalArgumentException("Category name must be no more than 50 characters");
         }
 
         categoryDto.setId(catId);

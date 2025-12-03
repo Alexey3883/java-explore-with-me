@@ -34,12 +34,16 @@ public class HitsEventViewUtil {
         ObjectMapper mapper = new ObjectMapper();
 
         if (responseBody != null) {
-            output = mapper.convertValue(responseBody, new TypeReference<List<ViewStatsDto>>() {});
+            try {
+                output = mapper.convertValue(responseBody, new TypeReference<List<ViewStatsDto>>() {});
+            } catch (IllegalArgumentException e) {
+                output = new ArrayList<>();
+            }
         }
 
         Long view = 0L;
 
-        if (!output.isEmpty()) {
+        if (!output.isEmpty() && output.get(0) != null && output.get(0).getHits() != null) {
             view = output.get(0).getHits();
         }
         return view;

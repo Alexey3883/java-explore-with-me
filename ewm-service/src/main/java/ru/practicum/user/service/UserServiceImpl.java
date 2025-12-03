@@ -44,19 +44,35 @@ public class UserServiceImpl implements UserService {
             throw new java.lang.IllegalArgumentException("Name cannot be empty or consist of spaces only");
         }
 
+        // Проверка длины строк
         if (newUserRequest.getName().length() < 2 || newUserRequest.getName().length() > 250) {
             throw new java.lang.IllegalArgumentException("Name must be between 2 and 250 characters");
         }
-
+        
         if (newUserRequest.getEmail().length() < 6 || newUserRequest.getEmail().length() > 254) {
             throw new java.lang.IllegalArgumentException("Email must be between 6 and 254 characters");
+        }
+        
+        // Проверка длины локальной части email (до @)
+        int atIndex = newUserRequest.getEmail().indexOf('@');
+        if (atIndex != -1) {
+            String localPart = newUserRequest.getEmail().substring(0, atIndex);
+            if (localPart.length() > 64) {
+                throw new java.lang.IllegalArgumentException("Email local part must be no more than 64 characters");
+            }
+            
+            // Проверка длины доменной части (после @)
+            String domainPart = newUserRequest.getEmail().substring(atIndex + 1);
+            if (domainPart.length() > 63) {
+                throw new java.lang.IllegalArgumentException("Email domain part must be no more than 63 characters");
+            }
         }
 
         log.info("Добавление нового пользователя: {}", newUserRequest);
 
         if (isUserExistByEmail(newUserRequest.getEmail())) {
             log.info("Нарушение целостности данных");
-            throw new IllegalArgumentException(
+            throw new ru.practicum.exception.IllegalArgumentException(
                     "Пользователь с email: " + newUserRequest.getEmail() + " уже зарегистрирован"
             );
         }
