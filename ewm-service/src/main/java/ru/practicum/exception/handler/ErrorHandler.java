@@ -64,7 +64,7 @@ public class ErrorHandler {
         if (errorMessage.length() > 2) {
             errorMessage.delete(errorMessage.length() - 2, errorMessage.length());
         }
-        
+
         return new ErrorResponse(errorMessage.toString());
     }
 
