@@ -1,7 +1,11 @@
 FROM amazoncorretto:21-alpine
 WORKDIR /app
 
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 VOLUME /tmp
+EXPOSE 9090
 
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
