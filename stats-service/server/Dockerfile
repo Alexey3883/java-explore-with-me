@@ -1,6 +1,9 @@
 FROM amazoncorretto:21-alpine
 WORKDIR /app
 
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 VOLUME /tmp
 EXPOSE 9090
 

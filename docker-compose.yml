@@ -15,9 +15,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9090/actuator/health" ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
 
   stats-db:
     image: postgres:16.1
@@ -45,16 +46,12 @@ services:
       ewm-db:
         condition: service_healthy
       stats-server:
-        condition: service_healthy
+        condition: service_started
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - STATS_URL=http://stats-container:9090
 
   ewm-db:
     image: postgres:16.1
