@@ -25,7 +25,10 @@ public class CompilationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/compilations")
     public CompilationDto addCompilationAdmin(@Valid @RequestBody NewCompilationDto newCompilationDto) {
-        log.info("Получен запрос на добавление новой компиляции {}", newCompilationDto);
+        log.info("Получен запрос на добавление новой компиляции {}", newCompilationDto);
+        if (newCompilationDto.getTitle() == null || newCompilationDto.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Compilation title cannot be null or empty");
+        }
         return compilationService.addCompilationAdmin(newCompilationDto);
     }
 
@@ -40,6 +43,9 @@ public class CompilationController {
     public CompilationDto updateCompilationAdmin(@PathVariable Long compId,
                                                  @Valid @RequestBody UpdateCompilationRequest updateCompilationRequest
     ) {
+        if (updateCompilationRequest.getTitle() == null || updateCompilationRequest.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Compilation title cannot be null or empty");
+        }
         return compilationService.updateCompilationAdmin(compId, updateCompilationRequest);
     }
 

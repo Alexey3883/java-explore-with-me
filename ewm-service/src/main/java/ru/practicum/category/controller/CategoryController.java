@@ -21,6 +21,9 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/categories")
     public CategoryDto addCategoryAdmin(@Valid @RequestBody NewCategoryDto categoryDto) {
+        if (categoryDto.getName() == null || categoryDto.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be null or empty");
+        }
         return categoryService.addCategory(categoryDto);
     }
 
@@ -34,6 +37,9 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto updateCategoryAdmin(@PathVariable Long catId,
                                            @Valid @RequestBody CategoryDto categoryDto) {
+        if (categoryDto.getName() == null || categoryDto.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be null or empty");
+        }
         return categoryService.updateCategory(catId, categoryDto);
     }
 

@@ -16,6 +16,6 @@ public class NewCategoryDto {
 
     @Size(min = 1, max = 50)
     @NotNull
-    @NotBlank
+    @NotBlank(message = "Category name cannot be blank")
     private String name;
 }

@@ -80,6 +80,10 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventMapper.toEvent(newEventDto, category, user);
 
+        if (newEventDto.getParticipantLimit() != null && newEventDto.getParticipantLimit() < 0) {
+            throw new ValidationException("Participant limit cannot be negative");
+        }
+
         Event newEvent = eventRepository.save(event);
 
         log.info("Событие добавлено");
@@ -170,6 +174,9 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateEventUserRequest.getParticipantLimit() != null) {
+            if (updateEventUserRequest.getParticipantLimit() < 0) {
+                throw new ValidationException("Participant limit cannot be negative");
+            }
             event.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
         }
 
@@ -324,6 +331,9 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateEventAdminRequest.getParticipantLimit() != null) {
+            if (updateEventAdminRequest.getParticipantLimit() < 0) {
+                throw new ValidationException("Participant limit cannot be negative");
+            }
             event.setParticipantLimit(updateEventAdminRequest.getParticipantLimit());
         }
 

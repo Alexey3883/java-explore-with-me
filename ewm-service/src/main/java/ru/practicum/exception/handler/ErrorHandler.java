@@ -2,9 +2,11 @@ package ru.practicum.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.validation.ObjectError;
 import ru.practicum.exception.IllegalArgumentException;
 import ru.practicum.exception.IncorrectDataException;
 import ru.practicum.exception.NotFoundException;
@@ -23,7 +25,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
         log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
@@ -48,6 +50,22 @@ public class ErrorHandler {
     public ErrorResponse handleUpdateEventIncorrectDataException(final UpdateEventIncorrectDataException e) {
         log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.warn("Validation failed: {}", e.getMessage());
+        StringBuilder errorMessage = new StringBuilder();
+        for (ObjectError error : e.getBindingResult().getAllErrors()) {
+            errorMessage.append(error.getDefaultMessage()).append("; ");
+        }
+
+        if (errorMessage.length() > 2) {
+            errorMessage.delete(errorMessage.length() - 2, errorMessage.length());
+        }
+        
+        return new ErrorResponse(errorMessage.toString());
     }
 
 }

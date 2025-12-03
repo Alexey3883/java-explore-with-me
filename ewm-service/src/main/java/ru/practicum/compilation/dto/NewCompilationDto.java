@@ -17,7 +17,7 @@ import java.util.List;
 public class NewCompilationDto {
 
     @NotNull
-    @NotBlank
+    @NotBlank(message = "Compilation title cannot be blank")
     @Size(min = 1, max = 50)
     private String title;
 
