@@ -84,6 +84,11 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public CompilationDto updateCompilationAdmin(Long compilationId, UpdateCompilationRequest updateCompilationRequest) {
+        if (updateCompilationRequest.getTitle() != null && !updateCompilationRequest.getTitle().isEmpty()) {
+            if (updateCompilationRequest.getTitle().length() > 50) {
+                throw new java.lang.IllegalArgumentException("Compilation title must be no more than 50 characters");
+            }
+        }
 
         Compilation compilation = getCompilationOrThrow(compilationId);
 

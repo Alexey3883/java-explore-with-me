@@ -1,7 +1,6 @@
 package ru.practicum.compilation.dto;
 
 import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +14,7 @@ import java.util.List;
 @Data
 public class UpdateCompilationRequest {
 
-    @Size(min = 1, max = 50)
-    @NotBlank(message = "Compilation title cannot be blank")
+    @Size(min = 1, max = 50, message = "Compilation title must be between 1 and 50 characters")
     private String title;
 
     private Boolean pinned;
