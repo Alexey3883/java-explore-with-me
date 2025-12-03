@@ -24,43 +24,68 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto addUserAdmin(NewUserRequest newUserRequest) {
         if (newUserRequest == null) {
-            throw new java.lang.IllegalArgumentException("User data cannot be null");
+            throw new java.lang.IllegalArgumentException("Данные пользователя не могут быть null");
         }
 
         if (newUserRequest.getEmail() == null) {
-            throw new java.lang.IllegalArgumentException("Email cannot be null");
+            throw new java.lang.IllegalArgumentException("Адрес электронной почты не может быть null");
         }
 
         if (newUserRequest.getEmail().trim().isEmpty()) {
-            throw new java.lang.IllegalArgumentException("Email cannot be empty or consist of spaces only");
+            throw new java.lang.IllegalArgumentException("Адрес электронной почты не может быть пустмы или состоять только из пробелов");
         }
 
         if (newUserRequest.getName() == null) {
-            throw new java.lang.IllegalArgumentException("Name cannot be null");
+            throw new java.lang.IllegalArgumentException("Имя не может быть null");
         }
 
         if (newUserRequest.getName().trim().isEmpty()) {
-            throw new java.lang.IllegalArgumentException("Name cannot be empty or consist of spaces only");
+            throw new java.lang.IllegalArgumentException("Имя не может быть пустым или состоять только из пробелов");
         }
 
         if (newUserRequest.getName().length() < 2 || newUserRequest.getName().length() > 250) {
-            throw new java.lang.IllegalArgumentException("Name must be between 2 and 250 characters");
+            throw new java.lang.IllegalArgumentException("Имя должно содержать от 2 до 250 символов");
         }
 
         if (newUserRequest.getEmail().length() < 6 || newUserRequest.getEmail().length() > 254) {
-            throw new java.lang.IllegalArgumentException("Email must be between 6 and 254 characters");
+            throw new java.lang.IllegalArgumentException("Адрес электронной почты должен содержать от 6 до 254 символов");
         }
 
         int atIndex = newUserRequest.getEmail().indexOf('@');
-        if (atIndex != -1) {
-            String localPart = newUserRequest.getEmail().substring(0, atIndex);
-            if (localPart.length() > 64) {
-                throw new java.lang.IllegalArgumentException("Email local part must be no more than 64 characters");
-            }
+        if (atIndex == -1 || atIndex == 0 || atIndex == newUserRequest.getEmail().length() - 1) {
+            throw new java.lang.IllegalArgumentException("Электронное письмо должно содержать ровно один символ @, не в начале и не в конце");
+        }
 
-            String domainPart = newUserRequest.getEmail().substring(atIndex + 1);
-            if (domainPart.length() > 63) {
-                throw new java.lang.IllegalArgumentException("Email domain part must be no more than 63 characters");
+        String localPart = newUserRequest.getEmail().substring(0, atIndex);
+        String domainPart = newUserRequest.getEmail().substring(atIndex + 1);
+
+        if (localPart.contains("..") || domainPart.contains("..")) {
+            throw new java.lang.IllegalArgumentException("Адрес электронной почты не может содержать точки");
+        }
+
+        if (localPart.startsWith(".") || localPart.endsWith(".") || domainPart.startsWith(".") || domainPart.endsWith(".")) {
+            throw new java.lang.IllegalArgumentException("Адрес электронной почты не может начинаться или заканчиваться точкой в локальной или доменной части");
+        }
+
+        if (localPart.length() > 64) {
+            throw new java.lang.IllegalArgumentException("Локальная часть адреса электронной почты не должн  превышать 64 символа");
+        }
+
+        if (domainPart.length() > 253) {
+            throw new java.lang.IllegalArgumentException("Часть домена электронной почты должна содержать не более 253 символов");
+        }
+
+        if (!domainPart.matches("^[a-zA-Z0-9.-]+$")) {
+            throw new java.lang.IllegalArgumentException("Домен электронной почты содержит недопустимые символы");
+        }
+
+        String[] domainParts = domainPart.split("\\.");
+        for (String part : domainParts) {
+            if (part.startsWith("-") || part.endsWith("-")) {
+                throw new java.lang.IllegalArgumentException("Доменные имена не могут начинаться или заканчиваться дефисами");
+            }
+            if (part.length() > 63) {
+                throw new java.lang.IllegalArgumentException("Длина каждого доменного имени не должна превышать 63 символа");
             }
         }
 

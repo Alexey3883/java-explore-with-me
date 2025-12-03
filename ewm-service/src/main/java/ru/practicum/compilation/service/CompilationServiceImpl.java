@@ -36,19 +36,19 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public CompilationDto addCompilationAdmin(NewCompilationDto newCompilationDto) {
         if (newCompilationDto == null) {
-            throw new java.lang.IllegalArgumentException("Compilation data cannot be null");
+            throw new java.lang.IllegalArgumentException("Данные компиляции не могут быть null");
         }
 
         if (newCompilationDto.getTitle() == null) {
-            throw new java.lang.IllegalArgumentException("Compilation title cannot be null");
+            throw new java.lang.IllegalArgumentException("Название сборника не может быть null");
         }
 
         if (newCompilationDto.getTitle().trim().isEmpty()) {
-            throw new java.lang.IllegalArgumentException("Compilation title cannot be empty or consist of spaces only");
+            throw new java.lang.IllegalArgumentException("Название компиляции не может быть пустым или состоять только из пробелов");
         }
 
         if (newCompilationDto.getTitle().length() > 50) {
-            throw new java.lang.IllegalArgumentException("Compilation title must be no more than 50 characters");
+            throw new java.lang.IllegalArgumentException("Название сборника должно быть не более 50 символов");
         }
 
         Compilation compilation = new Compilation();
@@ -84,19 +84,6 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public CompilationDto updateCompilationAdmin(Long compilationId, UpdateCompilationRequest updateCompilationRequest) {
-        if (updateCompilationRequest == null) {
-            throw new java.lang.IllegalArgumentException("Compilation data cannot be null");
-        }
-
-        if (updateCompilationRequest.getTitle() != null) {
-            if (updateCompilationRequest.getTitle().trim().isEmpty()) {
-                throw new java.lang.IllegalArgumentException("Compilation title cannot be empty or consist of spaces only");
-            }
-
-            if (updateCompilationRequest.getTitle().length() > 50) {
-                throw new java.lang.IllegalArgumentException("Compilation title must be no more than 50 characters");
-            }
-        }
 
         Compilation compilation = getCompilationOrThrow(compilationId);
 
@@ -108,9 +95,11 @@ public class CompilationServiceImpl implements CompilationService {
                 compilation.setEvents(events);
             }
         }
+
         if (updateCompilationRequest.getTitle() != null) {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
+
         if (updateCompilationRequest.getPinned() != null) {
             compilation.setPinned(updateCompilationRequest.getPinned());
         }

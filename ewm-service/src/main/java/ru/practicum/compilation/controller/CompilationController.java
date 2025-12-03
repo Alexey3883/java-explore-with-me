@@ -43,9 +43,6 @@ public class CompilationController {
     public CompilationDto updateCompilationAdmin(@PathVariable Long compId,
                                                  @Valid @RequestBody UpdateCompilationRequest updateCompilationRequest
     ) {
-        if (updateCompilationRequest.getTitle() == null || updateCompilationRequest.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("Compilation title cannot be null or empty");
-        }
         return compilationService.updateCompilationAdmin(compId, updateCompilationRequest);
     }
 

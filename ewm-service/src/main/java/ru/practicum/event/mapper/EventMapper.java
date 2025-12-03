@@ -25,6 +25,10 @@ public class EventMapper {
     private final CategoryRepository categoryRepository;
 
     public Event toEvent(NewEventDto newEventDto, Category category, User user) {
+        if (newEventDto == null) {
+            return null;
+        }
+
         Event event = new Event();
         event.setAnnotation(newEventDto.getAnnotation());
         event.setCategory(category);
@@ -35,16 +39,20 @@ public class EventMapper {
         event.setInitiator(user);
         event.setLon(newEventDto.getLocation().getLon());
         event.setLat(newEventDto.getLocation().getLat());
-        event.setPaid(newEventDto.getPaid() == null ? false : newEventDto.getPaid());
-        event.setParticipantLimit(newEventDto.getParticipantLimit() == null ? 0 : newEventDto.getParticipantLimit());
+        event.setPaid(newEventDto.getPaid() != null ? newEventDto.getPaid() : false);
+        event.setParticipantLimit(newEventDto.getParticipantLimit() != null ? newEventDto.getParticipantLimit() : 0);
         event.setPublishedOn(LocalDateTime.now());
-        event.setRequestModeration(newEventDto.getRequestModeration() == null ? true : newEventDto.getRequestModeration());
+        event.setRequestModeration(newEventDto.getRequestModeration() != null ? newEventDto.getRequestModeration() : true);
         event.setState(EventState.PENDING);
         event.setTitle(newEventDto.getTitle());
         return event;
     }
 
     public EventFullDto toFull(Event event, Long views) {
+        if (event == null) {
+            return null;
+        }
+
         EventFullDto eventFullDto = new EventFullDto();
         eventFullDto.setId(event.getId());
         eventFullDto.setAnnotation(event.getAnnotation());
@@ -66,6 +74,10 @@ public class EventMapper {
     }
 
     public EventShortDto toShort(Event event, Long views) {
+        if (event == null) {
+            return null;
+        }
+
         EventShortDto eventShortDto = new EventShortDto();
         eventShortDto.setId(event.getId());
         eventShortDto.setAnnotation(event.getAnnotation());
@@ -75,7 +87,7 @@ public class EventMapper {
         eventShortDto.setInitiator(userMapper.toUserShortDto(event.getInitiator()));
         eventShortDto.setPaid(event.getPaid());
         eventShortDto.setTitle(event.getTitle());
-        eventShortDto.setViews(views);
+        eventShortDto.setViews(views != null ? views : 0);
         return eventShortDto;
     }
 

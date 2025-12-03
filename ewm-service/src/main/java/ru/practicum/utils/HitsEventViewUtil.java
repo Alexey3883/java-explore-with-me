@@ -20,6 +20,10 @@ public class HitsEventViewUtil {
             throw new ValidationException("Start date cannot be after end date");
         }
 
+        if (eventId == null) {
+            return 0L;
+        }
+
         List<String> uris = new ArrayList<>();
         uris.add("/events/" + eventId);
 
@@ -43,7 +47,7 @@ public class HitsEventViewUtil {
 
         Long view = 0L;
 
-        if (!output.isEmpty() && output.get(0) != null && output.get(0).getHits() != null) {
+        if (output != null && !output.isEmpty() && output.get(0) != null && output.get(0).getHits() != null) {
             view = output.get(0).getHits();
         }
         return view;

@@ -12,6 +12,10 @@ import ru.practicum.user.model.User;
 public class UserMapper {
 
     public User toUser(NewUserRequest newUserRequest) {
+        if (newUserRequest == null) {
+            return null;
+        }
+
         return User.builder()
                 .email(newUserRequest.getEmail())
                 .name(newUserRequest.getName())
@@ -19,6 +23,10 @@ public class UserMapper {
     }
 
     public UserDto toUserDto(User user) {
+        if (user == null) {
+            return null;
+        }
+
         return UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -27,6 +35,10 @@ public class UserMapper {
     }
 
     public NewUserRequest toNewUserRequest(UserDto userDto) {
+        if (userDto == null) {
+            return null;
+        }
+
         return NewUserRequest.builder()
                 .email(userDto.getEmail())
                 .name(userDto.getName())
@@ -34,6 +46,10 @@ public class UserMapper {
     }
 
     public UserShortDto toUserShortDto(User user) {
+        if (user == null) {
+            return null;
+        }
+
         return UserShortDto.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -41,6 +57,10 @@ public class UserMapper {
     }
 
     public User toUserShort(UserShortDto userShortDto) {
+        if (userShortDto == null) {
+            return null;
+        }
+
         return User.builder()
                 .id(userShortDto.getId())
                 .name(userShortDto.getName())

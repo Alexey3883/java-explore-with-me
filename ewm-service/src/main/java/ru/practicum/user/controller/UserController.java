@@ -27,12 +27,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto addUserAdmin(@Valid @RequestBody NewUserRequest newUserRequest) {
         log.info("Получен запрос на добавление нового пользователя");
-        if (newUserRequest.getName() == null || newUserRequest.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        if (newUserRequest.getEmail() == null || newUserRequest.getEmail().trim().isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be null or empty");
-        }
+
         return userService.addUserAdmin(newUserRequest);
     }
 
