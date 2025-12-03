@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.IllegalArgumentException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.RequestMapper;
@@ -86,11 +85,11 @@ public class RequestServiceImpl implements RequestService {
 
         Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new NotFoundException("Запрос не найден"));
-        
+
         if (request.getStatus() == RequestStatus.CONFIRMED) {
             throw new ru.practicum.exception.IllegalArgumentException("Нельзя отменить подтвержденную заявку");
         }
-        
+
         request.setStatus(RequestStatus.CANCELED);
         request = requestRepository.save(request);
         log.info("Canceled request");
