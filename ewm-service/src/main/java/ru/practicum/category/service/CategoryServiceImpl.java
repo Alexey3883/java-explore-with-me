@@ -29,8 +29,25 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
         log.info("Получение запроса на добавление новой категории");
+
+        if (newCategoryDto == null) {
+            throw new IllegalArgumentException("Category data cannot be null");
+        }
+
+        if (newCategoryDto.getName() == null) {
+            throw new IllegalArgumentException("Category name cannot be null");
+        }
+
+        if (newCategoryDto.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be empty or consist of spaces only");
+        }
+
+        if (newCategoryDto.getName().length() > 50) {
+            throw new IllegalArgumentException("Category name must be no more than 50 characters");
+        }
+
         if (categoryRepository.existsByName(newCategoryDto.getName())) {
-            throw new IllegalArgumentException("Категория с таким именем уже существует");
+            throw new ru.practicum.exception.IllegalArgumentException("Категория с таким именем уже существует");
         }
         log.info("Категория добавлена");
         return categoryMapper.toCategoryDto(categoryRepository.save(categoryMapper.toCategory(newCategoryDto)));
@@ -71,12 +88,28 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
 
+        if (categoryDto == null) {
+            throw new IllegalArgumentException("Category data cannot be null");
+        }
+
+        if (categoryDto.getName() == null) {
+            throw new IllegalArgumentException("Category name cannot be null");
+        }
+
+        if (categoryDto.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be empty or consist of spaces only");
+        }
+
+        if (categoryDto.getName().length() > 50) {
+            throw new IllegalArgumentException("Category name must be no more than 50 characters");
+        }
+
         categoryDto.setId(catId);
         Category existCategory = categoryRepository.findById(categoryDto.getId()).orElseThrow(
                 () -> new NotFoundException("Category not found"));
 
         if (!existCategory.getName().equals(categoryDto.getName()) && categoryRepository.existsByName(categoryDto.getName())) {
-            throw new IllegalArgumentException("Категория с таким именем уже существует");
+            throw new ru.practicum.exception.IllegalArgumentException("Категория с таким именем уже существует");
         }
 
         existCategory.setName(categoryDto.getName());

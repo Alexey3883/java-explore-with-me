@@ -25,6 +25,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto addUserAdmin(NewUserRequest newUserRequest) {
 
+        // Проверка валидации
+        if (newUserRequest == null) {
+            throw new java.lang.IllegalArgumentException("User data cannot be null");
+        }
+        
+        if (newUserRequest.getEmail() == null) {
+            throw new java.lang.IllegalArgumentException("Email cannot be null");
+        }
+        
+        if (newUserRequest.getEmail().trim().isEmpty()) {
+            throw new java.lang.IllegalArgumentException("Email cannot be empty or consist of spaces only");
+        }
+        
+        if (newUserRequest.getName() == null) {
+            throw new java.lang.IllegalArgumentException("Name cannot be null");
+        }
+        
+        if (newUserRequest.getName().trim().isEmpty()) {
+            throw new java.lang.IllegalArgumentException("Name cannot be empty or consist of spaces only");
+        }
+        
+        // Проверка длины строк
+        if (newUserRequest.getName().length() < 2 || newUserRequest.getName().length() > 250) {
+            throw new java.lang.IllegalArgumentException("Name must be between 2 and 250 characters");
+        }
+        
+        if (newUserRequest.getEmail().length() < 6 || newUserRequest.getEmail().length() > 254) {
+            throw new java.lang.IllegalArgumentException("Email must be between 6 and 254 characters");
+        }
+
         log.info("Добавление нового пользователя: {}", newUserRequest);
 
         if (isUserExistByEmail(newUserRequest.getEmail())) {

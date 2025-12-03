@@ -35,6 +35,22 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public CompilationDto addCompilationAdmin(NewCompilationDto newCompilationDto) {
+        if (newCompilationDto == null) {
+            throw new IllegalArgumentException("Compilation data cannot be null");
+        }
+
+        if (newCompilationDto.getTitle() == null) {
+            throw new IllegalArgumentException("Compilation title cannot be null");
+        }
+
+        if (newCompilationDto.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Compilation title cannot be empty or consist of spaces only");
+        }
+
+        if (newCompilationDto.getTitle().length() > 50) {
+            throw new IllegalArgumentException("Compilation title must be no more than 50 characters");
+        }
+
         Compilation compilation = new Compilation();
         compilation.setTitle(newCompilationDto.getTitle());
 
@@ -58,15 +74,30 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public void deleteCompilationAdmin(Long compilationId) {
-        if (compilationRepository.existsById(compilationId)) {
-            compilationRepository.deleteById(compilationId);
-            log.info(String.format("Compilation with id=%d not found", compilationId));
+        if (!compilationRepository.existsById(compilationId)) {
+            throw new NotFoundException(String.format("Compilation with id=%d was not found", compilationId));
         }
+        compilationRepository.deleteById(compilationId);
+        log.info(String.format("Compilation with id=%d deleted", compilationId));
     }
 
     @Override
     @Transactional
     public CompilationDto updateCompilationAdmin(Long compilationId, UpdateCompilationRequest updateCompilationRequest) {
+        if (updateCompilationRequest == null) {
+            throw new java.lang.IllegalArgumentException("Compilation data cannot be null");
+        }
+
+        if (updateCompilationRequest.getTitle() != null) {
+            if (updateCompilationRequest.getTitle().trim().isEmpty()) {
+                throw new java.lang.IllegalArgumentException("Compilation title cannot be empty or consist of spaces only");
+            }
+
+            if (updateCompilationRequest.getTitle().length() > 50) {
+                throw new java.lang.IllegalArgumentException("Compilation title must be no more than 50 characters");
+            }
+        }
+
         Compilation compilation = getCompilationOrThrow(compilationId);
 
         if (updateCompilationRequest.getEvents() != null && !updateCompilationRequest.getEvents().isEmpty()) {
@@ -80,7 +111,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (updateCompilationRequest.getPinned() != null) {
             compilation.setPinned(updateCompilationRequest.getPinned());
         }
-        compilationRepository.save(compilation);
+        compilation = compilationRepository.save(compilation);
         Long view = getHitsEvent(compilationId, LocalDateTime.now().minusDays(1000),
                 LocalDateTime.now(), true, client);
         return compilationMapper.toDto(compilation, view);

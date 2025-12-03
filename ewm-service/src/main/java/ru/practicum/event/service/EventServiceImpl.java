@@ -67,6 +67,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto addEventPrivate(Long userId, NewEventDto newEventDto) {
 
+        validateNewEventDto(newEventDto);
+
         if (newEventDto.getEventDate() != null
                 && newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))
         ) {
@@ -128,7 +130,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId);
 
         if (event.getState() == EventState.PUBLISHED) {
-            throw new IllegalArgumentException("Пользователь не может изменять опубликованное событие");
+            throw new ru.practicum.exception.IllegalArgumentException("Пользователь не может изменять опубликованное событие");
         }
 
         User user = userRepository.findById(userId).orElseThrow(
@@ -136,10 +138,13 @@ public class EventServiceImpl implements EventService {
         );
 
         if (event.getState().equals(EventState.PUBLISHED)) {
-            throw new IllegalArgumentException("Должно быть PENDING или CANCELED");
+            throw new ru.practicum.exception.IllegalArgumentException("Должно быть PENDING или CANCELED");
         }
 
         log.info("Получен запрос на изменение события пользователя");
+
+        validateUpdateEventUserRequest(updateEventUserRequest);
+
         if (updateEventUserRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
@@ -190,7 +195,7 @@ public class EventServiceImpl implements EventService {
             } else if (updateEventUserRequest.getStateAction().equals("CANCEL_REVIEW")) {
                 event.setState(EventState.CANCELED);
             } else {
-                throw new IllegalArgumentException(
+                throw new ru.practicum.exception.IllegalArgumentException(
                         "Событие должно иметь статус PENDING при создании и статус CANCELED после выполнения запроса"
                 );
             }
@@ -286,19 +291,21 @@ public class EventServiceImpl implements EventService {
         if (updateEventAdminRequest.getStateAction() != null) {
             if (updateEventAdminRequest.getStateAction().equals("PUBLISH_EVENT")) {
                 if (!String.valueOf(event.getState()).equals("PENDING")) {
-                    throw new IllegalArgumentException("Состояние события должно быть PENDING");
+                    throw new ru.practicum.exception.IllegalArgumentException("Состояние события должно быть PENDING");
                 }
                 event.setState(EventState.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (updateEventAdminRequest.getStateAction().equals("REJECT_EVENT")) {
                 if (String.valueOf(event.getState()).equals("PUBLISHED")) {
-                    throw new IllegalArgumentException("Событие не может быть REJECT");
+                    throw new ru.practicum.exception.IllegalArgumentException("Событие не может быть REJECT");
                 }
                 event.setState(EventState.CANCELED);
             } else {
-                throw new IllegalArgumentException("StateAction должно быть PUBLISH_EVENT или REJECT_EVENT");
+                throw new ru.practicum.exception.IllegalArgumentException("StateAction должно быть PUBLISH_EVENT или REJECT_EVENT");
             }
         }
+
+        validateUpdateEventAdminRequest(updateEventAdminRequest);
 
         if (updateEventAdminRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
@@ -510,7 +517,7 @@ public class EventServiceImpl implements EventService {
         }
         for (Request request : requests) {
             if (!request.getStatus().equals(RequestStatus.PENDING)) {
-                throw new IllegalArgumentException("Статус запроса не PENDING");
+                throw new ru.practicum.exception.IllegalArgumentException("Статус запроса не PENDING");
             }
         }
         if (updateRequest.getStatus() != null) {
@@ -523,7 +530,7 @@ public class EventServiceImpl implements EventService {
                         confirmedRequests.addAll(requests);
 
                     } else if (event.getParticipantLimit() <= event.getConfirmedRequests()) {
-                        throw new IllegalArgumentException("Participant Limit");
+                        throw new ru.practicum.exception.IllegalArgumentException("У события достигнут лимит участников");
                     } else {
                         for (Request request : requests) {
                             if (event.getParticipantLimit() > event.getConfirmedRequests()) {
@@ -554,6 +561,78 @@ public class EventServiceImpl implements EventService {
         updateResult = new EventRequestStatusUpdateResult(confirmed, rejected);
         log.info("Запрос обновлен");
         return updateResult;
+    }
+
+    private void validateNewEventDto(NewEventDto newEventDto) {
+        if (newEventDto.getTitle() == null || newEventDto.getTitle().trim().isEmpty()) {
+            throw new ValidationException("Title cannot be null or empty");
+        }
+
+        if (newEventDto.getAnnotation() == null || newEventDto.getAnnotation().trim().isEmpty()) {
+            throw new ValidationException("Annotation cannot be null or empty");
+        }
+
+        if (newEventDto.getDescription() == null || newEventDto.getDescription().trim().isEmpty()) {
+            throw new ValidationException("Description cannot be null or empty");
+        }
+
+        if (newEventDto.getTitle().length() < 3 || newEventDto.getTitle().length() > 120) {
+            throw new ValidationException("Title length must be between 3 and 120 characters");
+        }
+
+        if (newEventDto.getAnnotation().length() < 20 || newEventDto.getAnnotation().length() > 2000) {
+            throw new ValidationException("Annotation length must be between 20 and 2000 characters");
+        }
+
+        if (newEventDto.getDescription().length() < 20 || newEventDto.getDescription().length() > 7000) {
+            throw new ValidationException("Description length must be between 20 and 7000 characters");
+        }
+    }
+
+    private void validateUpdateEventUserRequest(UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getTitle() != null &&
+                (updateEventUserRequest.getTitle().trim().isEmpty() ||
+                        updateEventUserRequest.getTitle().trim().length() < 3 ||
+                        updateEventUserRequest.getTitle().trim().length() > 120)) {
+            throw new ValidationException("Title must be between 3 and 120 characters and cannot be empty");
+        }
+
+        if (updateEventUserRequest.getAnnotation() != null &&
+                (updateEventUserRequest.getAnnotation().trim().isEmpty() ||
+                        updateEventUserRequest.getAnnotation().trim().length() < 20 ||
+                        updateEventUserRequest.getAnnotation().trim().length() > 2000)) {
+            throw new ValidationException("Annotation must be between 20 and 2000 characters and cannot be empty");
+        }
+
+        if (updateEventUserRequest.getDescription() != null &&
+                (updateEventUserRequest.getDescription().trim().isEmpty() ||
+                        updateEventUserRequest.getDescription().trim().length() < 20 ||
+                        updateEventUserRequest.getDescription().trim().length() > 7000)) {
+            throw new ValidationException("Description must be between 20 and 7000 characters and cannot be empty");
+        }
+    }
+
+    private void validateUpdateEventAdminRequest(UpdateEventAdminRequest updateEventAdminRequest) {
+        if (updateEventAdminRequest.getTitle() != null &&
+                (updateEventAdminRequest.getTitle().trim().isEmpty() ||
+                        updateEventAdminRequest.getTitle().trim().length() < 3 ||
+                        updateEventAdminRequest.getTitle().trim().length() > 120)) {
+            throw new ValidationException("Title must be between 3 and 120 characters and cannot be empty");
+        }
+
+        if (updateEventAdminRequest.getAnnotation() != null &&
+                (updateEventAdminRequest.getAnnotation().trim().isEmpty() ||
+                        updateEventAdminRequest.getAnnotation().trim().length() < 20 ||
+                        updateEventAdminRequest.getAnnotation().trim().length() > 2000)) {
+            throw new ValidationException("Annotation must be between 20 and 2000 characters and cannot be empty");
+        }
+
+        if (updateEventAdminRequest.getDescription() != null &&
+                (updateEventAdminRequest.getDescription().trim().isEmpty() ||
+                        updateEventAdminRequest.getDescription().trim().length() < 20 ||
+                        updateEventAdminRequest.getDescription().trim().length() > 7000)) {
+            throw new ValidationException("Description must be between 20 and 7000 characters and cannot be empty");
+        }
     }
 
 }

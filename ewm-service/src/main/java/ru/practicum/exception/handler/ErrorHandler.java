@@ -25,8 +25,15 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleConflictException(final IllegalArgumentException e) {
+        log.warn(e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
+    public ErrorResponse handleBadRequestException(final java.lang.IllegalArgumentException e) {
         log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }

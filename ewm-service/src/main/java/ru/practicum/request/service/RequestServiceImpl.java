@@ -43,16 +43,16 @@ public class RequestServiceImpl implements RequestService {
                 () -> new NotFoundException("Пользователь не найден"));
         List<Request> requests = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
         if (!requests.isEmpty()) {
-            throw new IllegalArgumentException("Запрос c такими данными уже существует");
+            throw new ru.practicum.exception.IllegalArgumentException("Запрос c такими данными уже существует");
         }
         if (userId.equals(event.getInitiator().getId())) {
-            throw new IllegalArgumentException("Инициатор запроса не найден");
+            throw new ru.practicum.exception.IllegalArgumentException("Нельзя участвовать в собственном событии");
         }
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new IllegalArgumentException("Событие не опубликовано");
+            throw new ru.practicum.exception.IllegalArgumentException("Событие не опубликовано");
         }
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
-            throw new IllegalArgumentException("Participant Limit");
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests()) {
+            throw new ru.practicum.exception.IllegalArgumentException("У события достигнут лимит участников");
         }
 
         request.setRequester(user);
@@ -86,10 +86,14 @@ public class RequestServiceImpl implements RequestService {
 
         Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new NotFoundException("Запрос не найден"));
+        
+        if (request.getStatus() == RequestStatus.CONFIRMED) {
+            throw new ru.practicum.exception.IllegalArgumentException("Нельзя отменить подтвержденную заявку");
+        }
+        
         request.setStatus(RequestStatus.CANCELED);
         request = requestRepository.save(request);
         log.info("Canceled request");
         return requestMapper.toDto(request);
     }
-
 }
