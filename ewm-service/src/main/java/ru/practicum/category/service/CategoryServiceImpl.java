@@ -11,7 +11,6 @@ import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.IllegalArgumentException;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
@@ -42,7 +41,6 @@ public class CategoryServiceImpl implements CategoryService {
             throw new java.lang.IllegalArgumentException("Category name cannot be empty or consist of spaces only");
         }
 
-        // Проверка длины строки
         if (newCategoryDto.getName().length() > 50) {
             throw new java.lang.IllegalArgumentException("Category name must be no more than 50 characters");
         }

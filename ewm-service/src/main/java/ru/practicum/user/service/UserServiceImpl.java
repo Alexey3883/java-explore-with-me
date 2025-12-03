@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.exception.IllegalArgumentException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
@@ -44,24 +43,21 @@ public class UserServiceImpl implements UserService {
             throw new java.lang.IllegalArgumentException("Name cannot be empty or consist of spaces only");
         }
 
-        // Проверка длины строк
         if (newUserRequest.getName().length() < 2 || newUserRequest.getName().length() > 250) {
             throw new java.lang.IllegalArgumentException("Name must be between 2 and 250 characters");
         }
-        
+
         if (newUserRequest.getEmail().length() < 6 || newUserRequest.getEmail().length() > 254) {
             throw new java.lang.IllegalArgumentException("Email must be between 6 and 254 characters");
         }
-        
-        // Проверка длины локальной части email (до @)
+
         int atIndex = newUserRequest.getEmail().indexOf('@');
         if (atIndex != -1) {
             String localPart = newUserRequest.getEmail().substring(0, atIndex);
             if (localPart.length() > 64) {
                 throw new java.lang.IllegalArgumentException("Email local part must be no more than 64 characters");
             }
-            
-            // Проверка длины доменной части (после @)
+
             String domainPart = newUserRequest.getEmail().substring(atIndex + 1);
             if (domainPart.length() > 63) {
                 throw new java.lang.IllegalArgumentException("Email domain part must be no more than 63 characters");
