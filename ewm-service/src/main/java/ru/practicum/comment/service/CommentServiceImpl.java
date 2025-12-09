@@ -40,7 +40,7 @@ public class CommentServiceImpl implements CommentService {
         if (newCommentDto.getText() == null || newCommentDto.getText().trim().isEmpty()) {
             throw new ValidationException("Текст комментария не может быть пустым");
         }
-        
+
         if (newCommentDto.getText().length() > 2000) {
             throw new ValidationException("Размер текста комментария должен быть не более 2000 символов");
         }
@@ -105,7 +105,7 @@ public class CommentServiceImpl implements CommentService {
         if (updateCommentDto.getText() == null || updateCommentDto.getText().trim().isEmpty()) {
             throw new ValidationException("Текст комментария не может быть пустым");
         }
-        
+
         if (updateCommentDto.getText().length() > 2000) {
             throw new ValidationException("Размер текста комментария должен быть не более 2000 символов");
         }
