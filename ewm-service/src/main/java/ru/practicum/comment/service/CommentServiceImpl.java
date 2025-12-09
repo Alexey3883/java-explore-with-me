@@ -40,6 +40,10 @@ public class CommentServiceImpl implements CommentService {
         if (newCommentDto.getText() == null || newCommentDto.getText().trim().isEmpty()) {
             throw new ValidationException("Текст комментария не может быть пустым");
         }
+        
+        if (newCommentDto.getText().length() > 2000) {
+            throw new ValidationException("Размер текста комментария должен быть не более 2000 символов");
+        }
 
         Event event = eventRepository.findById(eventId).orElseThrow();
 
@@ -101,6 +105,10 @@ public class CommentServiceImpl implements CommentService {
         if (updateCommentDto.getText() == null || updateCommentDto.getText().trim().isEmpty()) {
             throw new ValidationException("Текст комментария не может быть пустым");
         }
+        
+        if (updateCommentDto.getText().length() > 2000) {
+            throw new ValidationException("Размер текста комментария должен быть не более 2000 символов");
+        }
 
         comment.setText(updateCommentDto.getText());
         comment.setUpdated(LocalDateTime.now());
@@ -130,6 +138,9 @@ public class CommentServiceImpl implements CommentService {
             ));
         }
         if (commentDto.getText() != null) {
+            if (commentDto.getText().length() > 2000) {
+                throw new ValidationException("Размер текста комментария должен быть не более 2000 символов");
+            }
             comment.setText(commentDto.getText());
         }
         if (commentDto.getAuthor() != null) {
