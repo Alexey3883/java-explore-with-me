@@ -27,6 +27,15 @@ public class PrivateCommentController {
             @PathVariable Long userId,
             @Valid @RequestBody NewCommentDto newCommentDto) {
         log.info("Creating comment {}", newCommentDto);
+
+        if (newCommentDto.getText() == null || newCommentDto.getText().trim().isEmpty()) {
+            throw new ru.practicum.exception.ValidationException("Текст комментария не может быть пустым");
+        }
+
+        if (newCommentDto.getText().length() > 2000) {
+            throw new ru.practicum.exception.ValidationException("Текст комментария должен содержать не более 2000 символов");
+        }
+
         return commentService.createCommentPrivate(eventId, userId, newCommentDto);
     }
 
@@ -44,6 +53,15 @@ public class PrivateCommentController {
             @PathVariable Long userId,
             @Valid @RequestBody UpdateCommentDto updateCommentDto) {
         log.info("Updating comment {} by user {}", id, userId);
+
+        if (updateCommentDto.getText() == null || updateCommentDto.getText().trim().isEmpty()) {
+            throw new ru.practicum.exception.ValidationException("Текст комментария не может быть пустым");
+        }
+
+        if (updateCommentDto.getText().length() > 2000) {
+            throw new ru.practicum.exception.ValidationException("Текст комментария должен содержать не более 2000 символов");
+        }
+
         return commentService.updateCommentPrivate(id, userId, updateCommentDto);
     }
 

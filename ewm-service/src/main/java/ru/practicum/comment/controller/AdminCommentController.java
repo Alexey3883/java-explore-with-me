@@ -22,6 +22,17 @@ public class AdminCommentController {
     @PatchMapping("/comment/{id}")
     public CommentDto updateCommentAdmin(@PathVariable Long id, @Valid @RequestBody CommentDto commentDto) {
         log.info("Updating comment {} by admin", id);
+
+        if (commentDto.getText() != null) {
+            if (commentDto.getText().trim().isEmpty()) {
+                throw new ru.practicum.exception.ValidationException("Текст комментария не может быть пустым");
+            }
+
+            if (commentDto.getText().length() > 2000) {
+                throw new ru.practicum.exception.ValidationException("Текст комментария должен содержать не более 2000 символов");
+            }
+        }
+
         return commentService.updateCommentAdmin(id, commentDto);
     }
 
