@@ -96,16 +96,16 @@
                       }
                     },
                     "url": {
-                      "raw": "{{baseUrl}}/comments/users/{{uid}}/events/{{eid}}",
+                      "raw": "{{baseUrl}}/comments/event/{{eid}}/user/{{uid}}",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "comments",
-                        "users",
-                        "{{uid}}",
-                        "events",
-                        "{{eid}}"
+                        "event",
+                        "{{eid}}",
+                        "user",
+                        "{{uid}}"
                       ]
                     }
                   },
@@ -295,16 +295,16 @@
                       }
                     },
                     "url": {
-                      "raw": "{{baseUrl}}/comments/users/{{uid}}/events/{{eid}}",
+                      "raw": "{{baseUrl}}/comments/event/{{eid}}/user/{{uid}}",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "comments",
-                        "users",
-                        "{{uid}}",
-                        "events",
-                        "{{eid}}"
+                        "event",
+                        "{{eid}}",
+                        "user",
+                        "{{uid}}"
                       ]
                     }
                   },
@@ -393,16 +393,16 @@
                       }
                     },
                     "url": {
-                      "raw": "{{baseUrl}}/comments/users/{{uid}}/events/{{eid}}",
+                      "raw": "{{baseUrl}}/comments/event/{{eid}}/user/{{uid}}",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "comments",
-                        "users",
-                        "{{uid}}",
-                        "events",
-                        "{{eid}}"
+                        "event",
+                        "{{eid}}",
+                        "user",
+                        "{{uid}}"
                       ]
                     }
                   },
@@ -512,14 +512,12 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{baseUrl}}/comments/users/{{uid}}/{{commentId}}",
+                      "raw": "{{baseUrl}}/comments/{{commentId}}",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "comments",
-                        "users",
-                        "{{uid}}",
                         "{{commentId}}"
                       ]
                     }
@@ -783,16 +781,16 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/comments/users/{{uid}}/events/{{eid}}",
+              "raw": "{{baseUrl}}/comments/event/{{eid}}/user/{{uid}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "comments",
-                "users",
-                "{{uid}}",
-                "events",
-                "{{eid}}"
+                "event",
+                "{{eid}}",
+                "user",
+                "{{uid}}"
               ]
             }
           },
@@ -873,16 +871,16 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/comments/users/{{uid}}/events/{{eid}}",
+              "raw": "{{baseUrl}}/comments/event/{{eid}}/user/{{uid}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "comments",
-                "users",
-                "{{uid}}",
-                "events",
-                "{{eid}}"
+                "event",
+                "{{eid}}",
+                "user",
+                "{{uid}}"
               ]
             }
           },
@@ -970,16 +968,16 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/comments/users/{{uid}}/events/{{eid}}",
+              "raw": "{{baseUrl}}/comments/event/{{eid}}/user/{{uid}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "comments",
-                "users",
-                "{{uid}}",
-                "events",
-                "{{eid}}"
+                "event",
+                "{{eid}}",
+                "user",
+                "{{uid}}"
               ]
             }
           },

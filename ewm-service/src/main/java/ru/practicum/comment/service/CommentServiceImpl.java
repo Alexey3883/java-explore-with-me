@@ -149,7 +149,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setId(commentId);
 
         if (commentDto.getEvent() != null) {
-            comment.setEvent(getEventOrThrow(commentId));
+            comment.setEvent(getEventOrThrow(commentDto.getEvent().getId()));
         }
         if (commentDto.getText() != null) {
             if (commentDto.getText().length() > 2000) {
