@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.comment.validation.ValidCommentText;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.user.dto.UserShortDto;
 
@@ -21,8 +22,9 @@ public class CommentDto {
 
     private EventShortDto event;
 
-    @NotBlank
-    @Size(min = 1, max = 1000)
+    @ValidCommentText
+    @NotBlank(message = "Текст комментария не может быть пустым")
+    @Size(min = 1, max = 2000, message = "Текст комментария должен содержать от 1 до 2000 символов")
     private String text;
 
     private UserShortDto author;

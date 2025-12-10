@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidCommentText {
-    String message() default "Текст комментария не может быть пустым";
+    String message() default "Текст комментария должен быть от 1 до 2000 символов и не может состоять только из пробелов";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -152,9 +152,6 @@ public class CommentServiceImpl implements CommentService {
             comment.setEvent(getEventOrThrow(commentDto.getEvent().getId()));
         }
         if (commentDto.getText() != null) {
-            if (commentDto.getText().length() > 2000) {
-                throw new ValidationException("Размер текста комментария должен быть не более 2000 символов");
-            }
             comment.setText(commentDto.getText());
         }
         if (commentDto.getAuthor() != null) {

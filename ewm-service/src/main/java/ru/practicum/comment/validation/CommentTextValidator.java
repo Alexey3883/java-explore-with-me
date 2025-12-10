@@ -7,6 +7,20 @@ public class CommentTextValidator implements ConstraintValidator<ValidCommentTex
 
     @Override
     public boolean isValid(String text, ConstraintValidatorContext context) {
-        return text != null && !text.trim().isEmpty() && text.length() <= 2000;
+        if (text == null || text.trim().isEmpty()) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Текст комментария не может быть пустым")
+                    .addConstraintViolation();
+            return false;
+        }
+
+        if (text.length() > 2000) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Текст комментария должен содержать не более 2000 символов")
+                    .addConstraintViolation();
+            return false;
+        }
+
+        return true;
     }
 }

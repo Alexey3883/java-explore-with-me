@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.validation.ObjectError;
+import jakarta.validation.ConstraintViolationException;
 import ru.practicum.exception.IllegalArgumentException;
 import ru.practicum.exception.IncorrectDataException;
 import ru.practicum.exception.NotFoundException;
@@ -73,6 +74,13 @@ public class ErrorHandler {
         }
 
         return new ErrorResponse(errorMessage.toString());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
+        log.warn("Constraint violation: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
 }
