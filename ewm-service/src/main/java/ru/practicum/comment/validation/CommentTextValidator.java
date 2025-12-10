@@ -7,7 +7,14 @@ public class CommentTextValidator implements ConstraintValidator<ValidCommentTex
 
     @Override
     public boolean isValid(String text, ConstraintValidatorContext context) {
-        if (text == null || text.trim().isEmpty()) {
+        if (text == null) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Текст комментария не может быть пустым")
+                    .addConstraintViolation();
+            return false;
+        }
+
+        if (text.trim().isEmpty()) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("Текст комментария не может быть пустым")
                     .addConstraintViolation();

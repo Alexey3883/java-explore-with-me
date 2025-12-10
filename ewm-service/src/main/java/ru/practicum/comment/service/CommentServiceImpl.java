@@ -48,10 +48,22 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new NotFoundException("Комментарий с id=" + commentId + " не найден"));
     }
 
+    private void validateCommentText(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            throw new ValidationException("Текст комментария не может быть пустым");
+        }
+
+        if (text.length() > 2000) {
+            throw new ValidationException("Текст комментария должен содержать не более 2000 символов");
+        }
+    }
+
     @Override
     @Transactional
     public CommentDto createCommentPrivate(Long eventId, Long userId, NewCommentDto newCommentDto) {
         log.info("Создание комментария {}", newCommentDto);
+
+        validateCommentText(newCommentDto.getText());
 
         Event event = getEventOrThrow(eventId);
 
@@ -122,6 +134,8 @@ public class CommentServiceImpl implements CommentService {
 
         log.info("Обновление комментария пользователем {}", commentId);
 
+        validateCommentText(updateCommentDto.getText());
+
         Comment comment = getCommentOrThrow(commentId);
 
         if (!Objects.equals(comment.getAuthor().getId(), authorId)) {
@@ -152,6 +166,7 @@ public class CommentServiceImpl implements CommentService {
             comment.setEvent(getEventOrThrow(commentDto.getEvent().getId()));
         }
         if (commentDto.getText() != null) {
+            validateCommentText(commentDto.getText());
             comment.setText(commentDto.getText());
         }
         if (commentDto.getAuthor() != null) {
