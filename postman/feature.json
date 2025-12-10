@@ -157,15 +157,16 @@
                       }
                     },
                     "url": {
-                      "raw": "{{baseUrl}}/comments/users/{{uid}}/{{commentId}}",
+                      "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/{{uid}}",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "comments",
-                        "users",
-                        "{{uid}}",
-                        "{{commentId}}"
+                        "comment",
+                        "{{commentId}}",
+                        "user",
+                        "{{uid}}"
                       ]
                     }
                   },
@@ -206,14 +207,12 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{baseUrl}}/comments/users/{{uid}}/{{commentId}}",
+                      "raw": "{{baseUrl}}/comments/{{commentId}}",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "comments",
-                        "users",
-                        "{{uid}}",
                         "{{commentId}}"
                       ]
                     }
@@ -573,12 +572,13 @@
                       }
                     ],
                     "url": {
-                      "raw": "{{baseUrl}}/comments/{{eid}}",
+                      "raw": "{{baseUrl}}/comments/event/{{eid}}",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "comments",
+                        "event",
                         "{{eid}}"
                       ]
                     }
@@ -655,12 +655,13 @@
                       }
                     ],
                     "url": {
-                      "raw": "{{baseUrl}}/comments/{{eid}}",
+                      "raw": "{{baseUrl}}/comments/event/{{eid}}",
                       "host": [
                         "{{baseUrl}}"
                       ],
                       "path": [
                         "comments",
+                        "event",
                         "{{eid}}"
                       ]
                     }
@@ -1025,25 +1026,16 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/comments/users/:userId/:commentId",
+              "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/{{uid}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "comments",
-                "users",
-                ":userId",
-                ":commentId"
-              ],
-              "variable": [
-                {
-                  "key": "userId",
-                  "value": "{{uid}}"
-                },
-                {
-                  "key": "commentId",
-                  "value": "{{commentId}}"
-                }
+                "comment",
+                "{{commentId}}",
+                "user",
+                "{{uid}}"
               ]
             }
           },
