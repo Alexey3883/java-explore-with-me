@@ -80,17 +80,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
         log.warn("Constraint violation: {}", e.getMessage());
-        if (e.getConstraintViolations() != null && !e.getConstraintViolations().isEmpty()) {
-            StringBuilder errorMessage = new StringBuilder();
-            e.getConstraintViolations().forEach(violation ->
-                    errorMessage.append(violation.getMessage()).append("; "));
-
-            if (errorMessage.length() > 2) {
-                errorMessage.delete(errorMessage.length() - 2, errorMessage.length());
-            }
-
-            return new ErrorResponse(errorMessage.toString());
-        }
         return new ErrorResponse(e.getMessage());
     }
 }
