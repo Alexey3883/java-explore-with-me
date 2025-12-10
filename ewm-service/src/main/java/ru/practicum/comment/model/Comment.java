@@ -1,6 +1,5 @@
 package ru.practicum.comment.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,11 +35,8 @@ public class Comment {
     private User author;
 
     @Column
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime created;
+    private LocalDateTime createTime;
 
     @Column
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updated;
-
+    private LocalDateTime updateTime;
 }

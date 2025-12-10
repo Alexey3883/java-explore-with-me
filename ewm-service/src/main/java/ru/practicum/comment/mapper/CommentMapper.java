@@ -8,9 +8,7 @@ import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.dto.UpdateCommentDto;
 import ru.practicum.comment.model.Comment;
 import ru.practicum.event.mapper.EventMapper;
-import ru.practicum.event.repository.EventRepository;
 import ru.practicum.user.mapper.UserMapper;
-import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 
@@ -20,19 +18,14 @@ import static ru.practicum.utils.HitsEventViewUtil.getHitsEvent;
 @Component
 public class CommentMapper {
 
-    private final EventRepository eventRepository;
-    private final UserRepository userRepository;
     private final EventMapper eventMapper;
     private final UserMapper userMapper;
     private final StatsClient statsClient;
 
-    public Comment toNewComment(Long eventId, Long userId, NewCommentDto newCommentDto) {
-
+    public Comment toNewComment(NewCommentDto newCommentDto) {
         return Comment.builder()
-                .event(eventRepository.findById(eventId).orElseThrow())
                 .text(newCommentDto.getText())
-                .author(userRepository.findById(userId).orElseThrow())
-                .created(LocalDateTime.now())
+                .createTime(LocalDateTime.now())
                 .build();
     }
 
@@ -46,17 +39,13 @@ public class CommentMapper {
                 )))
                 .text(comment.getText())
                 .author(userMapper.toUserShortDto(comment.getAuthor()))
-                .created(comment.getCreated())
-                .updated(comment.getUpdated())
+                .created(comment.getCreateTime())
+                .updated(comment.getUpdateTime())
                 .build();
     }
 
-    public Comment toUpdateComment(UpdateCommentDto updateCommentDto) {
-
-        return Comment.builder()
-                .text(updateCommentDto.getText())
-                .updated(LocalDateTime.now())
-                .build();
+    public void updateCommentFields(Comment comment, UpdateCommentDto updateCommentDto) {
+        comment.setText(updateCommentDto.getText());
+        comment.setUpdateTime(LocalDateTime.now());
     }
-
 }

@@ -16,6 +16,7 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.IllegalArgumentException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
+import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -32,34 +33,50 @@ public class CommentServiceImpl implements CommentService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
 
+    private Event getEventOrThrow(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено"));
+    }
+
+    private User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
+    }
+
+    private Comment getCommentOrThrow(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("Комментарий с id=" + commentId + " не найден"));
+    }
+
     @Override
     @Transactional
     public CommentDto createCommentPrivate(Long eventId, Long userId, NewCommentDto newCommentDto) {
         log.info("Создание комментария {}", newCommentDto);
 
-        if (newCommentDto.getText() == null || newCommentDto.getText().trim().isEmpty()) {
-            throw new ValidationException("Текст комментария не может быть пустым");
-        }
-
-        if (newCommentDto.getText().length() > 2000) {
-            throw new ValidationException("Размер текста комментария должен быть не более 2000 символов");
-        }
-
-        Event event = eventRepository.findById(eventId).orElseThrow();
+        Event event = getEventOrThrow(eventId);
 
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ValidationException("Комментировать возможно только опубликованные события");
         }
 
-        return commentMapper.toCommentDto(
-                commentRepository.save(commentMapper.toNewComment(eventId, userId, newCommentDto))
-        );
+        User user = getUserOrThrow(userId);
+
+        Comment comment = commentMapper.toNewComment(newCommentDto);
+        comment.setEvent(event);
+        comment.setAuthor(user);
+
+        return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 
     @Override
     @Transactional
     public List<CommentDto> findAllByEventId(Long eventId) {
         log.info("Получение комментариев по событию с id {}", eventId);
+
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException("Событие с id=" + eventId + " не найдено");
+        }
+
         return commentRepository.findAllByEventId(eventId).stream()
                 .map(commentMapper::toCommentDto)
                 .toList();
@@ -69,20 +86,32 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public List<CommentDto> getCommentsByAuthorId(Long authorId) {
         log.info("Получение комментариев пользователя с id {}", authorId);
+
+        if (!userRepository.existsById(authorId)) {
+            throw new NotFoundException("Пользователь с id=" + authorId + " не найден");
+        }
+
         return commentRepository.findByAuthorId(authorId).stream()
-                .map(comment -> {
-                    commentMapper.toCommentDto(comment);
-                    return commentMapper.toCommentDto(comment);
-                })
+                .map(commentMapper::toCommentDto)
                 .toList();
     }
 
     @Override
     @Transactional
-    public CommentDto getComment(Long userId, Long commentId) {
+    public CommentDto getComment(Long commentId) {
         log.info("Получение комментария по id {}", commentId);
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        Comment comment = getCommentOrThrow(commentId);
+
+        return commentMapper.toCommentDto(comment);
+    }
+
+    @Override
+    @Transactional
+    public CommentDto getCommentById(Long commentId) {
+        log.info("Получение комментария по id {}", commentId);
+
+        Comment comment = getCommentOrThrow(commentId);
 
         return commentMapper.toCommentDto(comment);
     }
@@ -93,25 +122,14 @@ public class CommentServiceImpl implements CommentService {
 
         log.info("Обновление комментария пользователем {}", commentId);
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new ValidationException("Нельзя обновить несуществующий комментарий")
-        );
+        Comment comment = getCommentOrThrow(commentId);
 
         if (!Objects.equals(comment.getAuthor().getId(), authorId)) {
             throw new IllegalArgumentException("Только автор может изменять комментарий");
         }
 
         comment.setId(commentId);
-        if (updateCommentDto.getText() == null || updateCommentDto.getText().trim().isEmpty()) {
-            throw new ValidationException("Текст комментария не может быть пустым");
-        }
-
-        if (updateCommentDto.getText().length() > 2000) {
-            throw new ValidationException("Размер текста комментария должен быть не более 2000 символов");
-        }
-
-        comment.setText(updateCommentDto.getText());
-        comment.setUpdated(LocalDateTime.now());
+        commentMapper.updateCommentFields(comment, updateCommentDto);
         Comment updateComment = commentRepository.save(comment);
 
         return commentMapper.toCommentDto(updateComment);
@@ -126,16 +144,12 @@ public class CommentServiceImpl implements CommentService {
             throw new NotFoundException("Комментарий не найден");
         }
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new ValidationException("Нельзя обновить несуществующий комментарий")
-        );
+        Comment comment = getCommentOrThrow(commentId);
 
         comment.setId(commentId);
 
         if (commentDto.getEvent() != null) {
-            comment.setEvent(eventRepository.findById(commentId).orElseThrow(
-                    () -> new ValidationException("Нельзя обновить комментарий к отсутствущему событию")
-            ));
+            comment.setEvent(getEventOrThrow(commentId));
         }
         if (commentDto.getText() != null) {
             if (commentDto.getText().length() > 2000) {
@@ -144,12 +158,12 @@ public class CommentServiceImpl implements CommentService {
             comment.setText(commentDto.getText());
         }
         if (commentDto.getAuthor() != null) {
-            comment.setAuthor(userRepository.findById(commentDto.getAuthor().getId()).orElseThrow());
+            comment.setAuthor(getUserOrThrow(commentDto.getAuthor().getId()));
         }
         if (commentDto.getCreated() != null) {
-            comment.setCreated(commentDto.getCreated());
+            comment.setCreateTime(commentDto.getCreated());
         }
-        comment.setUpdated(commentDto.getUpdated());
+        comment.setUpdateTime(LocalDateTime.now());
 
         log.info("Updating comment {}", comment);
         return commentMapper.toCommentDto(commentRepository.save(comment));
@@ -160,7 +174,7 @@ public class CommentServiceImpl implements CommentService {
     public void deleteCommentPrivate(Long commentId, Long authorId) {
         log.info("Удаление комментария автором {}", commentId);
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        Comment comment = getCommentOrThrow(commentId);
 
         if (!Objects.equals(comment.getAuthor().getId(), authorId)) {
             throw new ValidationException("Только автор может удалить комментарий");
@@ -173,6 +187,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void deleteCommentAdmin(Long commentId) {
         log.info("Удаление комментария админом {}", commentId);
-        commentRepository.delete(commentRepository.findById(commentId).orElseThrow());
+        Comment comment = getCommentOrThrow(commentId);
+        commentRepository.delete(comment);
     }
 }

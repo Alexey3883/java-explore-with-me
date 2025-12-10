@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.comment.validation.ValidCommentText;
 
 @Builder
 @Data
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NewCommentDto {
 
+    @ValidCommentText
     @Size(min = 1, max = 2000)
     private String text;
 }
