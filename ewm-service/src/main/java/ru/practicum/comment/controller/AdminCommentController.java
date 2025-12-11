@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.UpdateCommentDto;
 import ru.practicum.comment.service.CommentService;
 
 @RestController
@@ -20,20 +21,9 @@ public class AdminCommentController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/comment/{id}")
-    public CommentDto updateCommentAdmin(@PathVariable Long id, @Valid @RequestBody CommentDto commentDto) {
+    public CommentDto updateCommentAdmin(@PathVariable Long id, @Valid @RequestBody UpdateCommentDto updateCommentDto) {
         log.info("Updating comment {} by admin", id);
-
-        if (commentDto.getText() != null) {
-            if (commentDto.getText().trim().isEmpty()) {
-                throw new ru.practicum.exception.ValidationException("Текст комментария не может быть пустым");
-            }
-
-            if (commentDto.getText().length() > 2000) {
-                throw new ru.practicum.exception.ValidationException("Текст комментария должен содержать не более 2000 символов");
-            }
-        }
-
-        return commentService.updateCommentAdmin(id, commentDto);
+        return commentService.updateCommentAdmin(id, updateCommentDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -20,7 +20,7 @@ public interface CommentService {
 
     CommentDto updateCommentPrivate(Long commentId, Long authorId, UpdateCommentDto updateCommentDto);
 
-    CommentDto updateCommentAdmin(Long commentId, CommentDto commentDto);
+    CommentDto updateCommentAdmin(Long commentId, UpdateCommentDto updateCommentDto);
 
     void deleteCommentPrivate(Long commentId, Long authorId);
 
