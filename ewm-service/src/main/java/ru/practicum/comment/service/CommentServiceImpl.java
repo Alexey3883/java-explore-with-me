@@ -60,6 +60,13 @@ public class CommentServiceImpl implements CommentService {
         }
 
         User user = getUserOrThrow(userId);
+        String text = newCommentDto.getText();
+        if (text == null || text.isBlank()) {
+            throw new ValidationException("Текст комментария не может быть пустым");
+        }
+        if (text.length() > 2000) {
+            throw new ValidationException("Текст комментария должен содержать от 1 до 2000 символов");
+        }
 
         Comment comment = commentMapper.toComment(newCommentDto);
         comment.setEvent(event);
@@ -124,8 +131,17 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("Только автор может изменять комментарий");
         }
 
+        String text = updateCommentDto.getText();
+
+        if (text == null || text.isBlank()) {
+            throw new ValidationException("Текст комментария не может быть пустым");
+        }
+        if (text.length() > 2000) {
+            throw new ValidationException("Текст комментария должен содержать от 1 до 2000 символов");
+        }
+
         comment.setId(commentId);
-        comment.setText(updateCommentDto.getText());
+        comment.setText(text);
         comment.setUpdateTime(LocalDateTime.now());
         Comment updateComment = commentRepository.save(comment);
 

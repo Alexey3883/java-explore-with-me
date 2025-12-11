@@ -1,6 +1,7 @@
 package ru.practicum.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,5 +80,12 @@ public class ErrorHandler {
                 .orElse("Constraint violation");
         log.warn("ConstraintViolationException: {}", errors);
         return new ErrorResponse(errors);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.warn("Data integrity violation: {}", e.getMessage());
+        return new ErrorResponse("Ошибка данных: " + e.getMostSpecificCause().getMessage());
     }
 }
