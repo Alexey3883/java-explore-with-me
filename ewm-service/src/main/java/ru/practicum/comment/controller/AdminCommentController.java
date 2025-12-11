@@ -21,7 +21,8 @@ public class AdminCommentController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/comment/{id}")
-    public CommentDto updateCommentAdmin(@PathVariable Long id, @Valid @RequestBody UpdateCommentDto updateCommentDto) {
+    public CommentDto updateCommentAdmin(@Valid @RequestBody UpdateCommentDto updateCommentDto,
+                                         @PathVariable Long id) {
         log.info("Updating comment {} by admin", id);
         return commentService.updateCommentAdmin(id, updateCommentDto);
     }

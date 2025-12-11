@@ -23,9 +23,9 @@ public class PrivateCommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/event/{eventId}/user/{userId}")
     public CommentDto createCommentPrivate(
+            @Valid @RequestBody NewCommentDto newCommentDto,
             @PathVariable Long eventId,
-            @PathVariable Long userId,
-            @Valid @RequestBody NewCommentDto newCommentDto) {
+            @PathVariable Long userId) {
         log.info("Creating comment {}", newCommentDto);
         return commentService.createCommentPrivate(eventId, userId, newCommentDto);
     }
@@ -40,9 +40,9 @@ public class PrivateCommentController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/comment/{id}/user/{userId}")
     public CommentDto updateCommentPrivate(
+            @Valid @RequestBody UpdateCommentDto updateCommentDto,
             @PathVariable Long id,
-            @PathVariable Long userId,
-            @Valid @RequestBody UpdateCommentDto updateCommentDto) {
+            @PathVariable Long userId) {
         log.info("Updating comment {} by user {}", id, userId);
         return commentService.updateCommentPrivate(id, userId, updateCommentDto);
     }
