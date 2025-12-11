@@ -125,12 +125,6 @@ public class CommentServiceImpl implements CommentService {
 
         log.info("Обновление комментария пользователем {}", commentId);
 
-        Comment comment = getCommentOrThrow(commentId);
-
-        if (!Objects.equals(comment.getAuthor().getId(), authorId)) {
-            throw new IllegalArgumentException("Только автор может изменять комментарий");
-        }
-
         String text = updateCommentDto.getText();
 
         if (text == null || text.isBlank()) {
@@ -138,6 +132,12 @@ public class CommentServiceImpl implements CommentService {
         }
         if (text.length() > 2000) {
             throw new ValidationException("Текст комментария должен содержать от 1 до 2000 символов");
+        }
+
+        Comment comment = getCommentOrThrow(commentId);
+
+        if (!Objects.equals(comment.getAuthor().getId(), authorId)) {
+            throw new IllegalArgumentException("Только автор может изменять комментарий");
         }
 
         comment.setId(commentId);
@@ -151,23 +151,20 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDto updateCommentAdmin(Long commentId, UpdateCommentDto updateCommentDto) {
-
         log.info("Обновление комментария админом {}", commentId);
-        if (!commentRepository.existsById(commentId)) {
-            throw new NotFoundException("Комментарий не найден");
+
+        String text = updateCommentDto.getText();
+        if (text == null || text.isBlank()) {
+            throw new ValidationException("Текст комментария не может быть пустым");
+        }
+        if (text.length() > 2000) {
+            throw new ValidationException("Текст комментария должен содержать от 1 до 2000 символов");
         }
 
         Comment comment = getCommentOrThrow(commentId);
-
-        comment.setId(commentId);
-
-        if (updateCommentDto.getText() != null) {
-            comment.setText(updateCommentDto.getText());
-        }
-
+        comment.setText(text);
         comment.setUpdateTime(LocalDateTime.now());
 
-        log.info("Updating comment {}", comment);
         return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 
