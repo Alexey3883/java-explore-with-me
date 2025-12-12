@@ -773,7 +773,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"text\": \"  \"\r\n}",
+              "raw": "{\r\n    \"text\": \"\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -859,7 +859,7 @@
             }
           ],
           "request": {
-            "method": "PATCH",
+            "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
@@ -871,7 +871,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/{{userId}}",
+              "raw": "{{baseUrl}}/comments/event/{{eid}}/user/{{uid}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1024,7 +1024,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/{{uid}}",
+              "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/{{userId}}",
               "host": [
                 "{{baseUrl}}"
               ],
