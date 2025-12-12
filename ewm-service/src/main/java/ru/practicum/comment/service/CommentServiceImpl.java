@@ -1,9 +1,11 @@
 package ru.practicum.comment.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.comment.dto.NewCommentDto;
 import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.dto.UpdateCommentDto;
@@ -25,6 +27,7 @@ import java.util.Objects;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Validated
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
@@ -49,7 +52,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDto createCommentPrivate(Long eventId, Long userId, NewCommentDto newCommentDto) {
+    public CommentDto createCommentPrivate(Long eventId, Long userId, @Valid NewCommentDto newCommentDto) {
         log.info("Создание комментария {}", newCommentDto);
 
         Event event = getEventOrThrow(eventId);
@@ -113,7 +116,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDto updateCommentPrivate(Long commentId, Long authorId, UpdateCommentDto updateCommentDto) {
+    public CommentDto updateCommentPrivate(Long commentId, Long authorId, @Valid UpdateCommentDto updateCommentDto) {
         log.info("Обновление комментария пользователем {}", commentId);
 
         String text = updateCommentDto.getText();
