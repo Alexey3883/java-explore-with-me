@@ -13,7 +13,6 @@ import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.IllegalArgumentException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.user.model.User;
@@ -60,13 +59,6 @@ public class CommentServiceImpl implements CommentService {
         }
 
         User user = getUserOrThrow(userId);
-        String text = newCommentDto.getText();
-        if (text == null || text.isBlank()) {
-            throw new ValidationException("Текст комментария не может быть пустым");
-        }
-        if (text.length() > 2000) {
-            throw new ValidationException("Текст комментария должен содержать от 1 до 2000 символов");
-        }
 
         Comment comment = commentMapper.toComment(newCommentDto);
         comment.setEvent(event);
@@ -122,22 +114,14 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDto updateCommentPrivate(Long commentId, Long authorId, UpdateCommentDto updateCommentDto) {
-
         log.info("Обновление комментария пользователем {}", commentId);
 
         String text = updateCommentDto.getText();
 
-        if (text == null || text.isBlank()) {
-            throw new ValidationException("Текст комментария не может быть пустым");
-        }
-        if (text.length() > 2000) {
-            throw new ValidationException("Текст комментария должен содержать от 1 до 2000 символов");
-        }
-
         Comment comment = getCommentOrThrow(commentId);
 
         if (!Objects.equals(comment.getAuthor().getId(), authorId)) {
-            throw new IllegalArgumentException("Только автор может изменять комментарий");
+            throw new ru.practicum.exception.IncorrectDataException("Только автор может изменять комментарий");
         }
 
         comment.setId(commentId);
@@ -154,12 +138,6 @@ public class CommentServiceImpl implements CommentService {
         log.info("Обновление комментария админом {}", commentId);
 
         String text = updateCommentDto.getText();
-        if (text == null || text.isBlank()) {
-            throw new ValidationException("Текст комментария не может быть пустым");
-        }
-        if (text.length() > 2000) {
-            throw new ValidationException("Текст комментария должен содержать от 1 до 2000 символов");
-        }
 
         Comment comment = getCommentOrThrow(commentId);
         comment.setText(text);
@@ -176,7 +154,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = getCommentOrThrow(commentId);
 
         if (!Objects.equals(comment.getAuthor().getId(), authorId)) {
-            throw new ValidationException("Только автор может удалить комментарий");
+            throw new ru.practicum.exception.IncorrectDataException("Только автор может удалить комментарий");
         }
 
         commentRepository.delete(comment);
