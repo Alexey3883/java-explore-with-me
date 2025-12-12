@@ -781,7 +781,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/comments/event/{{eventId}}/user/{{userId}}",
+              "raw": "\"{{baseUrl}}/comments/event/{{eid}}/user/{{uid}}\"",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1004,7 +1004,43 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  ""
+                  "const main = async () => {\r",
+                  "    const api = new API(pm);\r",
+                  "    const rnd = new RandomUtils();\r",
+                  "\r",
+                  "    try {\r",
+                  "        const user = await api.addUser(rnd.getUser());\r",
+                  "        const category = await api.addCategory(rnd.getCategory());\r",
+                  "        let event = await api.addEvent(user.id, rnd.getEvent(category.id));\r",
+                  "        event = await api.publishEvent(event.id);\r",
+                  "        // Создаем комментарий для последующего обновления\r",
+                  "        const comment = await api.addComment(user.id, event.id, {text: \"Initial comment text\"});\r",
+                  "        pm.request.removeQueryParams(['users', 'categories']);\r",
+                  "        pm.collectionVariables.set(\"eid\", event.id);\r",
+                  "        pm.collectionVariables.set(\"uid\", user.id);\r",
+                  "        pm.collectionVariables.set(\"commentId\", comment.id);\r",
+                  "        pm.request.url.query.add({key: \"from\",value: \"0\"});\r",
+                  "        pm.request.url.query.add({key: \"size\",value: \"10\"});\r",
+                  "    } catch(err) {\r",
+                  "        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+                  "    }\r",
+                  "};\r",
+                  "\r",
+                  "const interval = setInterval(() => {}, 1000);\r",
+                  "\r",
+                  "setTimeout(async () => \r",
+                  "    {\r",
+                  "        try {\r",
+                  "            // выполняем наш скрипт\r",
+                  "            await main();\r",
+                  "        } catch (e) {\r",
+                  "            console.error(e);\r",
+                  "        } finally {\r",
+                  "            clearInterval(interval);\r",
+                  "        }\r",
+                  "    },  \r",
+                  "    100 \r",
+                  ");"
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -1024,7 +1060,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/{{userId}}",
+              "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/{{uid}}",
               "host": [
                 "{{baseUrl}}"
               ],
