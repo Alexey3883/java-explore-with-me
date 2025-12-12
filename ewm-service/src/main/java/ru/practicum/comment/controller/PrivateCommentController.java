@@ -24,8 +24,8 @@ public class PrivateCommentController {
     @PostMapping("/event/{eventId}/user/{userId}")
     public CommentDto createCommentPrivate(
             @Valid @RequestBody NewCommentDto newCommentDto,
-            @PathVariable Long eventId,
-            @PathVariable Long userId) {
+            @PathVariable Long userId,
+            @PathVariable Long eventId) {
         log.info("Creating comment {}", newCommentDto);
         return commentService.createCommentPrivate(eventId, userId, newCommentDto);
     }
