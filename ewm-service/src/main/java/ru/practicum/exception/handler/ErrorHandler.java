@@ -33,7 +33,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(ru.practicum.exception.IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleProjectIllegalArgumentException(ru.practicum.exception.IllegalArgumentException e) {
         log.warn("Project IllegalArgumentException: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
