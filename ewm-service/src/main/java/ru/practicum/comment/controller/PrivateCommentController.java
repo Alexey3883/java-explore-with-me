@@ -21,7 +21,7 @@ public class PrivateCommentController {
     private final CommentService commentService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/users/{userId}/events/{eventId}")
+    @PostMapping("/event/{eventId}/user/{userId}")
     public CommentDto createCommentPrivate(
             @Valid @RequestBody NewCommentDto newCommentDto,
             @PathVariable Long userId,
