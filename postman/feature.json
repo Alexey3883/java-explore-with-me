@@ -1,53 +1,82 @@
 {
   "info": {
-    "name": "ewm-comments-feature",
+    "name": "Comments API – fully automated with event creation",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "Create published event (admin)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:8080/admin/events",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"title\": \"Тестовое событие\", \"state\": \"PUBLISHED\", \"description\": \"Тест\" }"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Event created 201', () => pm.response.to.have.status(201));",
+              "if (pm.response.code === 201) {",
+              "  const json = pm.response.json();",
+              "  pm.collectionVariables.set('eventId', json.id);",
+              "  console.log('Created event ID:', json.id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
     {
       "name": "Create comment (private) – OK",
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "http://localhost:8080/comments/event/1/user/1",
+        "url": "http://localhost:8080/comments/event/{{eventId}}/user/1",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"Тестовый комментарий\" }"
         }
       },
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
-            "pm.test('201 Created', () => pm.response.to.have.status(201));",
-            "if (pm.response.code === 201) {",
-            "  const json = pm.response.json();",
-            "  pm.collectionVariables.set('commentId', json.id);",
-            "  console.log('Created comment ID:', json.id);",
-            "}"
-          ]
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('201 Created', () => pm.response.to.have.status(201));",
+              "if (pm.response.code === 201) {",
+              "  const json = pm.response.json();",
+              "  pm.collectionVariables.set('commentId', json.id);",
+              "  console.log('Created comment ID:', json.id);",
+              "}"
+            ]
+          }
         }
-      }]
+      ]
     },
     {
       "name": "Create comment – validation error",
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "http://localhost:8080/comments/event/1/user/1",
+        "url": "http://localhost:8080/comments/event/{{eventId}}/user/1",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"\" }"
         }
       },
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
+      "event": [
+        {
+          "listen": "test",
+          "script": [
             "pm.test('400 Bad Request', () => pm.response.to.have.status(400));"
           ]
         }
-      }]
+      ]
     },
     {
       "name": "Get comment by id – OK",
@@ -55,10 +84,10 @@
         "method": "GET",
         "url": "http://localhost:8080/comments/{{commentId}}"
       },
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
+      "event": [
+        {
+          "listen": "test",
+          "script": [
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
             "if (pm.response.code === 200) {",
             "  const json = pm.response.json();",
@@ -66,7 +95,7 @@
             "}"
           ]
         }
-      }]
+      ]
     },
     {
       "name": "Update comment – forbidden",
@@ -79,14 +108,14 @@
           "raw": "{ \"text\": \"Чужое обновление\" }"
         }
       },
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
+      "event": [
+        {
+          "listen": "test",
+          "script": [
             "pm.test('403 Forbidden', () => pm.response.to.have.status(403));"
           ]
         }
-      }]
+      ]
     },
     {
       "name": "Update comment – OK",
@@ -99,10 +128,10 @@
           "raw": "{ \"text\": \"Обновлённый комментарий\" }"
         }
       },
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
+      "event": [
+        {
+          "listen": "test",
+          "script": [
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
             "if (pm.response.code === 200) {",
             "  const json = pm.response.json();",
@@ -110,18 +139,18 @@
             "}"
           ]
         }
-      }]
+      ]
     },
     {
       "name": "Get comments by event – OK",
       "request": {
         "method": "GET",
-        "url": "http://localhost:8080/comments/event/1"
+        "url": "http://localhost:8080/comments/event/{{eventId}}"
       },
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
+      "event": [
+        {
+          "listen": "test",
+          "script": [
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
             "if (pm.response.code === 200) {",
             "  const json = pm.response.json();",
@@ -129,7 +158,7 @@
             "}"
           ]
         }
-      }]
+      ]
     },
     {
       "name": "Delete comment (admin) – OK",
@@ -137,14 +166,14 @@
         "method": "DELETE",
         "url": "http://localhost:8080/admin/comments/{{commentId}}"
       },
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
+      "event": [
+        {
+          "listen": "test",
+          "script": [
             "pm.test('204 No Content', () => pm.response.to.have.status(204));"
           ]
         }
-      }]
+      ]
     },
     {
       "name": "Delete comment – NOT FOUND",
@@ -152,14 +181,14 @@
         "method": "DELETE",
         "url": "http://localhost:8080/admin/comments/{{commentId}}"
       },
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
+      "event": [
+        {
+          "listen": "test",
+          "script": [
             "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
           ]
         }
-      }]
+      ]
     }
   ]
 }
