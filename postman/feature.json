@@ -1,42 +1,20 @@
 {
   "info": {
-    "name": "Comments API – fully automated with event creation",
+    "name": "Comments API – GitHub ready",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    { "key": "eventId", "value": "1" },
+    { "key": "userId", "value": "1" },
+    { "key": "commentId", "value": "" }
+  ],
   "item": [
-    {
-      "name": "Create published event (admin)",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "http://localhost:8080/admin/events",
-        "body": {
-          "mode": "raw",
-          "raw": "{ \"title\": \"Тестовое событие\", \"state\": \"PUBLISHED\", \"description\": \"Тест\" }"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Event created 201', () => pm.response.to.have.status(201));",
-              "if (pm.response.code === 201) {",
-              "  const json = pm.response.json();",
-              "  pm.collectionVariables.set('eventId', json.id);",
-              "  console.log('Created event ID:', json.id);",
-              "}"
-            ]
-          }
-        }
-      ]
-    },
     {
       "name": "Create comment (private) – OK",
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "http://localhost:8080/comments/event/{{eventId}}/user/1",
+        "url": "http://localhost:8080/comments/event/{{eventId}}/user/{{userId}}",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"Тестовый комментарий\" }"
@@ -49,9 +27,8 @@
             "exec": [
               "pm.test('201 Created', () => pm.response.to.have.status(201));",
               "if (pm.response.code === 201) {",
-              "  const json = pm.response.json();",
-              "  pm.collectionVariables.set('commentId', json.id);",
-              "  console.log('Created comment ID:', json.id);",
+              "    const json = pm.response.json();",
+              "    pm.collectionVariables.set('commentId', json.id);",
               "}"
             ]
           }
@@ -63,7 +40,7 @@
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "http://localhost:8080/comments/event/{{eventId}}/user/1",
+        "url": "http://localhost:8080/comments/event/{{eventId}}/user/{{userId}}",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"\" }"
@@ -89,10 +66,8 @@
           "listen": "test",
           "script": [
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
-            "if (pm.response.code === 200) {",
-            "  const json = pm.response.json();",
-            "  pm.expect(json.id).to.eql(Number(pm.collectionVariables.get('commentId')));",
-            "}"
+            "const json = pm.response.json();",
+            "pm.expect(json.id).to.eql(Number(pm.collectionVariables.get('commentId')));"
           ]
         }
       ]
@@ -122,7 +97,7 @@
       "request": {
         "method": "PATCH",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "http://localhost:8080/comments/comment/{{commentId}}/user/1",
+        "url": "http://localhost:8080/comments/comment/{{commentId}}/user/{{userId}}",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"Обновлённый комментарий\" }"
@@ -133,10 +108,8 @@
           "listen": "test",
           "script": [
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
-            "if (pm.response.code === 200) {",
-            "  const json = pm.response.json();",
-            "  pm.expect(json.text).to.eql('Обновлённый комментарий');",
-            "}"
+            "const json = pm.response.json();",
+            "pm.expect(json.text).to.eql('Обновлённый комментарий');"
           ]
         }
       ]
@@ -152,10 +125,8 @@
           "listen": "test",
           "script": [
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
-            "if (pm.response.code === 200) {",
-            "  const json = pm.response.json();",
-            "  pm.expect(json).to.be.an('array');",
-            "}"
+            "const json = pm.response.json();",
+            "pm.expect(json).to.be.an('array');"
           ]
         }
       ]
