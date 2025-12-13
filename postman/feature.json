@@ -1,0 +1,160 @@
+{
+  "info": {
+    "name": "ewm-comments-feature",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Private Comment Controller",
+      "item": [
+        {
+          "name": "Create Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"This is a test comment\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments/event/1/user/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "event", "1", "user", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comment By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"This is an updated test comment\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments/comment/1/user/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "comment", "1", "user", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/comment/1/user/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "comment", "1", "user", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Public Comment Controller",
+      "item": [
+        {
+          "name": "Get Comments By Event ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/event/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "event", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comments By Author ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/user/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "user", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Comment Controller",
+      "item": [
+        {
+          "name": "Update Comment As Admin",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"This comment was updated by admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/comment/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "comment", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment As Admin",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/comments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "comments", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
