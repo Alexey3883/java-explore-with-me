@@ -9,7 +9,7 @@
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "{{baseUrl}}/comments/event/1/user/1",
+        "url": "http://localhost:8080/comments/event/1/user/1",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"Тестовый комментарий\" }"
@@ -22,8 +22,8 @@
             "pm.test('201 Created', () => pm.response.to.have.status(201));",
             "if (pm.response.code === 201) {",
             "  const json = pm.response.json();",
-            "  pm.expect(json).to.have.property('id');",
-            "  pm.environment.set('commentId', json.id);",
+            "  pm.collectionVariables.set('commentId', json.id);",
+            "  console.log('Created comment ID:', json.id);",
             "}"
           ]
         }
@@ -34,7 +34,7 @@
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "{{baseUrl}}/comments/event/1/user/1",
+        "url": "http://localhost:8080/comments/event/1/user/1",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"\" }"
@@ -53,7 +53,7 @@
       "name": "Get comment by id – OK",
       "request": {
         "method": "GET",
-        "url": "{{baseUrl}}/comments/{{commentId}}"
+        "url": "http://localhost:8080/comments/{{commentId}}"
       },
       "event": [{
         "listen": "test",
@@ -62,7 +62,7 @@
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
             "if (pm.response.code === 200) {",
             "  const json = pm.response.json();",
-            "  pm.expect(json.id).to.eql(Number(pm.environment.get('commentId')));",
+            "  pm.expect(json.id).to.eql(Number(pm.collectionVariables.get('commentId')));",
             "}"
           ]
         }
@@ -73,7 +73,7 @@
       "request": {
         "method": "PATCH",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "{{baseUrl}}/comments/comment/{{commentId}}/user/2",
+        "url": "http://localhost:8080/comments/comment/{{commentId}}/user/2",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"Чужое обновление\" }"
@@ -89,16 +89,74 @@
       }]
     },
     {
+      "name": "Update comment – OK",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:8080/comments/comment/{{commentId}}/user/1",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"text\": \"Обновлённый комментарий\" }"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "if (pm.response.code === 200) {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.text).to.eql('Обновлённый комментарий');",
+            "}"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Get comments by event – OK",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8080/comments/event/1"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "if (pm.response.code === 200) {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json).to.be.an('array');",
+            "}"
+          ]
+        }
+      }]
+    },
+    {
       "name": "Delete comment (admin) – OK",
       "request": {
         "method": "DELETE",
-        "url": "{{baseUrl}}/admin/comments/{{commentId}}"
+        "url": "http://localhost:8080/admin/comments/{{commentId}}"
       },
       "event": [{
         "listen": "test",
         "script": {
           "exec": [
             "pm.test('204 No Content', () => pm.response.to.have.status(204));"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Delete comment – NOT FOUND",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:8080/admin/comments/{{commentId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
           ]
         }
       }]
