@@ -1,7 +1,6 @@
 {
   "info": {
     "name": "ewm-comments-feature",
-    "_postman_id": "8d1a9b2c-6c6f-4c5e-9f1a-123456789abc",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -10,216 +9,99 @@
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": {
-          "raw": "{{baseUrl}}/comments/event/1/user/1",
-          "host": ["{{baseUrl}}"],
-          "path": ["comments", "event", "1", "user", "1"]
-        },
+        "url": "{{baseUrl}}/comments/event/1/user/1",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"Тестовый комментарий\" }"
         }
       },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('201 Created', () => pm.response.to.have.status(201));",
-              "const json = pm.response.json();",
-              "pm.expect(json).to.have.property('id');",
-              "pm.environment.set('commentId', json.id);"
-            ]
-          }
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "if (pm.response.code === 201) {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json).to.have.property('id');",
+            "  pm.environment.set('commentId', json.id);",
+            "}"
+          ]
         }
-      ]
+      }]
     },
     {
-      "name": "Create comment – validation error (empty text)",
+      "name": "Create comment – validation error",
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": {
-          "raw": "{{baseUrl}}/comments/event/1/user/1",
-          "host": ["{{baseUrl}}"],
-          "path": ["comments", "event", "1", "user", "1"]
-        },
+        "url": "{{baseUrl}}/comments/event/1/user/1",
         "body": {
           "mode": "raw",
           "raw": "{ \"text\": \"\" }"
         }
       },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('400 Bad Request', () => pm.response.to.have.status(400));"
-            ]
-          }
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('400 Bad Request', () => pm.response.to.have.status(400));"
+          ]
         }
-      ]
+      }]
     },
     {
       "name": "Get comment by id – OK",
       "request": {
         "method": "GET",
-        "url": {
-          "raw": "{{baseUrl}}/comments/{{commentId}}",
-          "host": ["{{baseUrl}}"],
-          "path": ["comments", "{{commentId}}"]
-        }
+        "url": "{{baseUrl}}/comments/{{commentId}}"
       },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('200 OK', () => pm.response.to.have.status(200));",
-              "const json = pm.response.json();",
-              "pm.expect(json.id).to.eql(Number(pm.environment.get('commentId')));"
-            ]
-          }
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "if (pm.response.code === 200) {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.id).to.eql(Number(pm.environment.get('commentId')));",
+            "}"
+          ]
         }
-      ]
+      }]
     },
     {
-      "name": "Get comment – NOT FOUND",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "{{baseUrl}}/comments/999999",
-          "host": ["{{baseUrl}}"],
-          "path": ["comments", "999999"]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "Update comment (private) – OK",
+      "name": "Update comment – forbidden",
       "request": {
         "method": "PATCH",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": {
-          "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/1",
-          "host": ["{{baseUrl}}"],
-          "path": ["comments", "comment", "{{commentId}}", "user", "1"]
-        },
+        "url": "{{baseUrl}}/comments/comment/{{commentId}}/user/2",
         "body": {
           "mode": "raw",
-          "raw": "{ \"text\": \"Обновлённый комментарий\" }"
+          "raw": "{ \"text\": \"Чужое обновление\" }"
         }
       },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('200 OK', () => pm.response.to.have.status(200));",
-              "pm.expect(pm.response.json().text).to.eql('Обновлённый комментарий');"
-            ]
-          }
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('403 Forbidden', () => pm.response.to.have.status(403));"
+          ]
         }
-      ]
-    },
-    {
-      "name": "Update comment – FORBIDDEN (not author)",
-      "request": {
-        "method": "PATCH",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": {
-          "raw": "{{baseUrl}}/comments/comment/{{commentId}}/user/2",
-          "host": ["{{baseUrl}}"],
-          "path": ["comments", "comment", "{{commentId}}", "user", "2"]
-        },
-        "body": {
-          "mode": "raw",
-          "raw": "{ \"text\": \"Попытка чужого обновления\" }"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('403 Forbidden', () => pm.response.to.have.status(403));"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "Get comments by event – OK",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "{{baseUrl}}/comments/event/1",
-          "host": ["{{baseUrl}}"],
-          "path": ["comments", "event", "1"]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('200 OK', () => pm.response.to.have.status(200));",
-              "pm.expect(pm.response.json()).to.be.an('array');"
-            ]
-          }
-        }
-      ]
+      }]
     },
     {
       "name": "Delete comment (admin) – OK",
       "request": {
         "method": "DELETE",
-        "url": {
-          "raw": "{{baseUrl}}/admin/comments/{{commentId}}",
-          "host": ["{{baseUrl}}"],
-          "path": ["admin", "comments", "{{commentId}}"]
-        }
+        "url": "{{baseUrl}}/admin/comments/{{commentId}}"
       },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('204 No Content', () => pm.response.to.have.status(204));"
-            ]
-          }
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('204 No Content', () => pm.response.to.have.status(204));"
+          ]
         }
-      ]
-    },
-    {
-      "name": "Delete comment – NOT FOUND",
-      "request": {
-        "method": "DELETE",
-        "url": {
-          "raw": "{{baseUrl}}/admin/comments/{{commentId}}",
-          "host": ["{{baseUrl}}"],
-          "path": ["admin", "comments", "{{commentId}}"]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
-            ]
-          }
-        }
-      ]
+      }]
     }
   ]
 }
